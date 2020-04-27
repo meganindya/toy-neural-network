@@ -111,6 +111,92 @@ class Matrix {
             return res;
         }
     }
+
+    private float minOrMax(int v) {
+        float val;
+        if (v == 0) {
+            val = Float.MAX_VALUE;
+        } else {
+            val = Float.MIN_VALUE;
+        }
+
+        for (int r = 0; r < dims.rows; r++) {
+            for (int c = 0; c < dims.cols; c++) {
+                if (v == 0) {
+                    val = min(val, getCell(r, c));
+                } else {
+                    val = max(val, getCell(r, c));
+                }
+            }
+        }
+        return val;
+    }
+
+    private Matrix minOrMax(int v, int axis) {
+        Matrix res;
+
+        if (axis == 0) {
+            res = new Matrix(1, dims.cols);
+
+            for (int c = 0; c < dims.cols; c++) {
+                float val;
+                if (v == 0) {
+                    val = Float.MAX_VALUE;
+                } else {
+                    val = Float.MIN_VALUE;
+                }
+
+                for (int r = 0; r < dims.rows; r++) {
+                    if (v == 0) {
+                        val = min(val, getCell(r, c));
+                    } else {
+                        val = max(val, getCell(r, c));
+                    }
+                }
+                res.setCell(0, c, val);
+            }
+
+            return res;
+        } else {
+            res = new Matrix(dims.rows, 1);
+
+            for (int r = 0; r < dims.rows; r++) {
+                float val;
+                if (v == 0) {
+                    val = Float.MAX_VALUE;
+                } else {
+                    val = Float.MIN_VALUE;
+                }
+
+                for (int c = 0; c < dims.cols; c++) {
+                    if (v == 0) {
+                        val = min(val, getCell(r, c));
+                    } else {
+                        val = max(val, getCell(r, c));
+                    }
+                }
+                res.setCell(r, 0, val);
+            }
+
+            return res;
+        }
+    }
+
+    float min() {
+        return minOrMax(0);
+    }
+
+    float min(int axis) {
+        return minOrMax(0, axis);
+    }
+
+    float max() {
+        return minOrMax(1);
+    }
+
+    float max(int axis) {
+        return minOrMax(1, axis);
+    }
 }
 
 private static float unaryOp(float v, String op) {
