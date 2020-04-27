@@ -7,9 +7,7 @@ class NeuralNetwork {
     private String activationFuncs[];
     private Matrix cost;
 
-    NeuralNetwork(Matrix X, Matrix Y, int layers[]) {
-        this.X = X;
-        this.Y = Y;
+    NeuralNetwork(int layers[]) {
         this.layers = layers;
 
         nLayers = layers.length - 1;
@@ -34,7 +32,9 @@ class NeuralNetwork {
                 activationFuncs[i] = "relu";
             }
         }
-        initialize();
+
+        W[0] = dW[0] = Z[0] = dZ[0] = null;
+        activationFuncs[0] = "";
 
         b = new float[nLayers + 1];
         db = new float[nLayers + 1];
@@ -42,12 +42,7 @@ class NeuralNetwork {
         cost = new Matrix(layers[nLayers], 1);
     }
 
-    private void initialize() {
-        W[0] = Z[0] = null;
-        A[0] = X.copy();
-        dW[0] = dZ[0] = null;
-        activationFuncs[0] = "";
-
+    private void initializeParameters() {
         for (int i = 1; i < W.length; i++) {
             Matrix w = W[i];
             Dimensions dims = w.getDims();
@@ -98,6 +93,7 @@ class NeuralNetwork {
     }
 
     void forwardPropagate() {
+        A[0] = X.copy();
         for (int i = 1; i <= nLayers; i++) {
             Z[i] = add(mul(W[i], A[i - 1]), b[i]);
             A[i] = activate(Z[i], activationFuncs[i]);
@@ -124,11 +120,22 @@ class NeuralNetwork {
         }
     }
 
-    void update(float alpha) {
+    void updateParameters(float alpha) {
         for (int i = 1; i <= nLayers; i++) {
             W[i] = sub(W[i], mul(alpha, dW[i]));
             b[i] = sub(W[i], mul(alpha, db[i]));
         }
+    }
+
+    void train(Matrix X, Matrix Y) {
+        this.X = X;
+        this.Y = Y;
+
+        initializeParameters();
+        forwardPropagate();
+        calculateCost();
+        backPropagate();
+        updateParameters();
     }
 
     /*void show(int w, int h) {
