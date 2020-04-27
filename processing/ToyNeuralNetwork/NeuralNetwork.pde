@@ -2,14 +2,12 @@ class NeuralNetwork {
     private Matrix X, Y;
     private Matrix[] W, dW, Z, dZ, A, dA;
     private float[] b, db;
-    private Dimensions dims[];
     private int layers[], nLayers;
     private String activationFuncs[];
     private Matrix cost;
 
     NeuralNetwork(int layers[]) {
         this.layers = layers;
-
         nLayers = layers.length - 1;
 
         W = new Matrix[nLayers + 1];
@@ -18,6 +16,8 @@ class NeuralNetwork {
         dZ = new Matrix[nLayers + 1];
         A = new Matrix[nLayers + 1];
         dA = new Matrix[nLayers + 1];
+        activationFuncs = new String[nLayers + 1];
+
         for (int i = 1; i <= nLayers; i++) {
             W[i] = new Matrix(layers[i], layers[i - 1]);
             dW[i] = new Matrix(layers[i], layers[i - 1]);
@@ -66,7 +66,7 @@ class NeuralNetwork {
 
     private Matrix activate(Matrix m, String func) {
         Dimensions dims = m.getDims();
-        Matrix res;
+        Matrix res = new Matrix(dims.rows, dims.cols);
 
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
@@ -107,8 +107,8 @@ class NeuralNetwork {
             dZ[i] = mul(dA[i], activate(Z[i], activationFuncs[i]));
 
             int m = layers[i - 1];
-            dW[i] = div(dot(dZ, A[i - 1].T), m);
-            db[i] = div(dZ[i].sum(axis), m);
+            dW[i] = div(dot(dZ[i], A[i - 1].T), m);
+            db[i] = dZ[i].sum() / m;
             dA[i - 1] = dot(W[i].T, dZ[i]);
         }
     }
@@ -116,11 +116,11 @@ class NeuralNetwork {
     private void updateParameters(float alpha) {
         for (int i = 1; i <= nLayers; i++) {
             W[i] = sub(W[i], mul(alpha, dW[i]));
-            b[i] = sub(W[i], mul(alpha, db[i]));
+            b[i] = b[i] - alpha * db[i];
         }
     }
 
-    void train(Matrix X, Matrix Y) {
+    void train(Matrix X, Matrix Y, float alpha) {
         this.X = X;
         this.Y = Y;
 
@@ -128,7 +128,7 @@ class NeuralNetwork {
         forwardPropagate();
         calculateCost();
         backPropagate();
-        updateParameters();
+        updateParameters(alpha);
     }
 
     void show(int xpos, int ypos, int hgap, int vgap, int radius) {
@@ -144,10 +144,10 @@ class NeuralNetwork {
             int x = i;
 
             for (int m = 0; m < layers[i]; m++) {
-                float yM = (float) m + (1 - layers[i]) / 2;
+                float yM = m + (float) (1 - layers[i]) / 2;
 
                 for (int n = 0; n < layers[i + 1]; n++) {
-                    float yN = (float) n + (1 - layers[i + 1]) / 2;
+                    float yN = n + (float) (1 - layers[i + 1]) / 2;
 
                     stroke(0);
                     line(x * hgap, yM * vgap, (x + 1) * hgap, yN * vgap);
@@ -157,8 +157,9 @@ class NeuralNetwork {
                 ellipse(x * hgap, yM * vgap, radius * 2, radius * 2);
             }
         }
+
         for (int i = 0; i < layers[nLayers]; i++) {
-            float y = (float) i + (1 - layers[nLayers]) / 2;
+            float y = i + (float) (1 - layers[nLayers]) / 2;
 
             stroke(255, 0, 0);
             ellipse(nLayers * hgap, y * vgap, radius * 2, radius * 2);

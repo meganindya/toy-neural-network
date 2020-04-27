@@ -25,12 +25,12 @@ void settings() {
 }
 
 void setup() {
-    background(255);
     frameRate(2);
 
     network = new NeuralNetwork(layers);
 }
 
 void draw() {
+    background(255);
     network.show(buffer, buffer + networkHeight / 2, hspace, vspace, radius);
 }
