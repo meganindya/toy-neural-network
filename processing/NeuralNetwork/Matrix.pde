@@ -61,6 +61,46 @@ class Matrix {
         }
         println("---");
     }
+
+    float sum() {
+        float sum = 0;
+        for (int r = 0; r < dims.rows; r++) {
+            for (int c = 0; c < dims.cols; c++) {
+                sum += getCell(r, c);
+            }
+        }
+        return sum;
+    }
+
+    Matrix sum(int axis) {
+        Matrix res;
+
+        if (axis == 0) {
+            res = new Matrix(1, dims.cols);
+
+            for (int c = 0; c < dims.cols; c++) {
+                float sum = 0;
+                for (int r = 0; r < dims.rows; r++) {
+                    sum += getCell(r, c);
+                }
+                res.setCell(0, c, sum);
+            }
+
+            return res;
+        } else {
+            res = new Matrix(dims.rows, 1);
+
+            for (int r = 0; r < dims.rows; r++) {
+                float sum = 0;
+                for (int c = 0; c < dims.cols; c++) {
+                    sum += getCell(r, c);
+                }
+                res.setCell(r, 0, sum);
+            }
+
+            return res;
+        }
+    }
 }
 
 static float unaryOp(float v, String op) {
