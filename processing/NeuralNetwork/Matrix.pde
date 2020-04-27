@@ -1,16 +1,16 @@
-class Matrix {
-    class Dimensions {
-        final int rows, cols;
+class Dimensions {
+    final int rows, cols;
 
-        Dimensions(int rows, int cols) {
-            this.rows = rows;
-            this.cols = cols;
-        }
+    Dimensions(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
     }
+}
 
+class Matrix {
     private Dimensions dims;
     private float matrix[][];
-    Matrix T;
+    final Matrix T;
 
     Matrix(int rows, int cols) {
         dims = new Dimensions(rows, cols);
@@ -29,25 +29,29 @@ class Matrix {
         return dims;
     }
 
+    int[] shape() {
+        return new int[] { dims.rows, dims.cols };
+    }
+
+    float getCell(int r, int c) {
+        return matrix[r][c];
+    }
+
+    void setCell(int r, int c, float v) {
+        matrix[r][c] = v;
+        T.matrix[c][r] = v;
+    }
+
     void randomize(float min, float max) {
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
-                matrix[r][c] = random(min, max);
-            }
-        }
-        updateTranspose();
-    }
-
-    void updateTranspose() {
-        for (int r = 0; r < T.dims.rows; r++) {
-            for (int c = 0; c < T.dims.cols; c++) {
-                T.matrix[r][c] = matrix[c][r];
+                setCell(r, c, random(min, max));
             }
         }
     }
 
     void printMatrix() {
-        println("[ " + dims.rows + ", " + dims.cols + "]");
+        println("(" + dims.rows + ", " + dims.cols + ")");
         println("---");
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
@@ -57,110 +61,138 @@ class Matrix {
         }
         println("---");
     }
+}
 
-    float binaryOp(float a, float b, char op) {
-        if (op == '+')
-            return a + b;
-        else if (op == '-')
-            return a - b;
-        else if (op == '*')
-            return a * b;
-        else if (op == '/')
-            return a / b;
-        else if (op == '%')
-            return a % b;
-        return 0;
+static float unaryOp(float v, String op) {
+    if (op.equals("log10"))
+        return log(v) / log(10);
+    else if (op.equals("log"))
+        return log(v);
+    return 0;
+}
+
+Matrix elemWiseUnaryOp(Matrix m, String op) {
+    Dimensions dims = m.getDims();
+    Matrix res = new Matrix(dims.rows, dims.cols);
+
+    for (int r = 0; r < dims.rows; r++) {
+        for (int c = 0; c < dims.cols; c++) {
+            res.setCell(r, c, unaryOp(m.getCell(r, c), op));
+        }
     }
 
-    Matrix elemWiseBinaryOp(int v, char op) {
-        Matrix res = new Matrix(dims.rows, dims.cols);
+    return res;
+}
 
-        for (int r = 0; r < dims.rows; r++) {
-            for (int c = 0; c < dims.cols; c++) {
-                res.matrix[r][c] = binaryOp(this.matrix[r][c], v, op);
+static float binaryOp(float a, float b, char op) {
+    if (op == '+')
+        return a + b;
+    else if (op == '-')
+        return a - b;
+    else if (op == '*')
+        return a * b;
+    else if (op == '/')
+        return a / b;
+    else if (op == '%')
+        return a % b;
+    return 0;
+}
+
+Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
+    Dimensions dims = m.getDims();
+    Matrix res = new Matrix(dims.rows, dims.cols);
+
+    for (int r = 0; r < dims.rows; r++) {
+        for (int c = 0; c < dims.cols; c++) {
+            res.setCell(r, c, binaryOp(m.getCell(r, c), v, op));
+        }
+    }
+
+    return res;
+}
+
+Matrix elemWiseBinaryOp(Matrix m, Matrix n, char op) {
+    Dimensions dimM = m.getDims();
+    Dimensions dimN = n.getDims();
+
+    Matrix res = null;
+
+    if (
+        (dimM.rows == dimN.rows && dimM.cols == dimN.cols) ||
+        // broadcasting cases
+        (
+            dimM.rows == dimN.rows &&
+            (dimM.cols > 1 && dimN.cols == 1)
+        ) ||
+        (
+            dimM.cols == dimN.cols &&
+            (dimM.rows > 1 && dimN.rows == 1)
+        ) ||
+        (dimN.rows == 1 && dimN.cols == 1)
+    ) {
+        res = new Matrix(
+            max(dimM.rows, dimN.rows), max(dimM.cols, dimM.cols)
+        );
+
+        Dimensions dimRes = res.getDims();
+        for (int r = 0; r < dimRes.rows; r++) {
+            for (int c = 0; c < dimRes.cols; c++) {
+                res.setCell(r, c, binaryOp(
+                    m.getCell(r, c),
+                    n.getCell(min(dimN.rows - 1, r), min(dimN.cols - 1, c)),
+                    op
+                ));
             }
         }
-
-        res.updateTranspose();
-        return res;
     }
 
-    Matrix elemWiseBinaryOp(Matrix n, char op) {
-        Dimensions dimM = this.dims;
-        Dimensions dimN = n.getDims();
+    return res;
+}
 
-        Matrix res = null;
+Matrix add(Matrix m, int v) {
+    return elemWiseBinaryOp(m, v, '+');
+}
 
-        if (
-            (dimM.rows == dimN.rows && dimM.cols == dimN.cols) ||
-            // broadcasting cases
-            (
-                dimM.rows == dimN.rows &&
-                (dimM.cols > 1 && dimN.cols == 1)
-            ) ||
-            (
-                dimM.cols == dimN.cols &&
-                (dimM.rows > 1 && dimN.rows == 1)
-            ) ||
-            (dimN.rows == 1 && dimN.cols == 1)
-        ) {
-            res = new Matrix(
-                max(dimM.rows, dimN.rows), max(dimM.cols, dimM.cols)
-            );
-            Dimensions dimRes = res.getDims();
+Matrix add(Matrix m, Matrix n) {
+    return elemWiseBinaryOp(m, n, '+');
+}
 
-            for (int r = 0; r < dimRes.rows; r++) {
-                for (int c = 0; c < dimRes.cols; c++) {
-                    res.matrix[r][c] = binaryOp(
-                        this.matrix[r][c],
-                        n.matrix[min(dimN.rows - 1, r)][min(dimN.cols - 1, c)],
-                        op
-                    );
-                }
-            }
-        }
+Matrix sub(Matrix m, int v) {
+    return elemWiseBinaryOp(m, v, '-');
+}
 
-        res.updateTranspose();
-        return res;
-    }
+Matrix sub(Matrix m, Matrix n) {
+    return elemWiseBinaryOp(m, n, '-');
+}
 
-    Matrix add(int v) {
-        return elemWiseBinaryOp(v, '+');
-    }
+Matrix mul(Matrix m, int v) {
+    return elemWiseBinaryOp(m, v, '*');
+}
 
-    Matrix add(Matrix m) {
-        return elemWiseBinaryOp(m, '+');
-    }
+Matrix mul(Matrix m, Matrix n) {
+    return elemWiseBinaryOp(m, n, '*');
+}
 
-    Matrix sub(int v) {
-        return elemWiseBinaryOp(v, '-');
-    }
+Matrix div(Matrix m, int v) {
+    return elemWiseBinaryOp(m, v, '/');
+}
 
-    Matrix sub(Matrix m) {
-        return elemWiseBinaryOp(m, '-');
-    }
+Matrix div(Matrix m, Matrix n) {
+    return elemWiseBinaryOp(m, n, '/');
+}
 
-    Matrix mul(int v) {
-        return elemWiseBinaryOp(v, '*');
-    }
+Matrix mod(Matrix m, int v) {
+    return elemWiseBinaryOp(m, v, '%');
+}
 
-    Matrix mul(Matrix m) {
-        return elemWiseBinaryOp(m, '*');
-    }
+Matrix mod(Matrix m, Matrix n) {
+    return elemWiseBinaryOp(m, n, '%');
+}
 
-    Matrix div(int v) {
-        return elemWiseBinaryOp(v, '/');
-    }
+Matrix log10(Matrix m) {
+    return elemWiseUnaryOp(m, "log10");
+}
 
-    Matrix div(Matrix m) {
-        return elemWiseBinaryOp(m, '/');
-    }
-
-    Matrix mod(int v) {
-        return elemWiseBinaryOp(v, '%');
-    }
-
-    Matrix mod(Matrix m) {
-        return elemWiseBinaryOp(m, '%');
-    }
+Matrix log(Matrix m) {
+    return elemWiseUnaryOp(m, "log");
 }
