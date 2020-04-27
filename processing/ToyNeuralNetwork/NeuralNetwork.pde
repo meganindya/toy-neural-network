@@ -124,6 +124,13 @@ class NeuralNetwork {
         }
     }
 
+    void update(float alpha) {
+        for (int i = 1; i <= nLayers; i++) {
+            W[i] = sub(W[i], mul(alpha, dW[i]));
+            b[i] = sub(W[i], mul(alpha, db[i]));
+        }
+    }
+
     /*void show(int w, int h) {
         int max = 0;
         for (int i = 0; i < nLayers; i++) {
