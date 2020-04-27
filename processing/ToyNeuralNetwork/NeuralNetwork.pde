@@ -5,6 +5,7 @@ class NeuralNetwork {
     private Dimensions dims[];
     private int layers[], nLayers;
     private String activationFuncs[];
+    private Matrix cost;
 
     NeuralNetwork(Matrix X, Matrix Y, int layers[]) {
         this.X = X;
@@ -30,6 +31,8 @@ class NeuralNetwork {
         initialize();
 
         b = new float[nLayers + 1];
+
+        cost = new Matrix(layers[nLayers], 1);
     }
 
     private void initialize() {
@@ -79,6 +82,15 @@ class NeuralNetwork {
             Z[i] = add(mul(W[i], A[i - 1]), b[i]);
             A[i] = activate(Z[i], activationFuncs[i]);
         }
+    }
+
+    void calculateCost() {
+        int m = layers[nLayers];
+        Matrix AL = A[nLayers];
+        cost = div(
+            add(dot(Y, log(AL.T)), dot(sub(1, Y), log(sub(1, AL)).T)),
+            -m
+        );
     }
 
     /*void show(int w, int h) {
