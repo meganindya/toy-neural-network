@@ -9,21 +9,21 @@ class Matrix {
     }
 
     private Dimensions dims;
-    private int matrix[][];
+    private float matrix[][];
 
     Matrix(int rows, int cols) {
         dims = new Dimensions(rows, cols);
-        this.matrix = new int[rows][cols];
+        this.matrix = new float[rows][cols];
     }
 
     Dimensions getDims() {
         return dims;
     }
 
-    void randomize(int min, int max) {
+    void randomize(float min, float max) {
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
-                matrix[r][c] = floor(random(min, max));
+                matrix[r][c] = random(min, max);
             }
         }
     }
