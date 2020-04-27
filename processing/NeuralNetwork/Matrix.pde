@@ -10,10 +10,19 @@ class Matrix {
 
     private Dimensions dims;
     private float matrix[][];
+    Matrix T;
 
     Matrix(int rows, int cols) {
         dims = new Dimensions(rows, cols);
-        this.matrix = new float[rows][cols];
+        matrix = new float[rows][cols];
+        T = new Matrix(this);
+    }
+
+    Matrix(Matrix m) {
+        Dimensions dimM = m.getDims();
+        dims = new Dimensions(dimM.cols, dimM.rows);
+        matrix = new float[dims.rows][dims.cols];
+        T = m;
     }
 
     Dimensions getDims() {
@@ -23,12 +32,23 @@ class Matrix {
     void randomize(float min, float max) {
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
-                matrix[r][c] = floor(random(min, max));
+                matrix[r][c] = random(min, max);
+            }
+        }
+        updateTranspose();
+    }
+
+    void updateTranspose() {
+        for (int r = 0; r < T.dims.rows; r++) {
+            for (int c = 0; c < T.dims.cols; c++) {
+                T.matrix[r][c] = matrix[c][r];
             }
         }
     }
 
     void printMatrix() {
+        println("[ " + dims.rows + ", " + dims.cols + "]");
+        println("---");
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
                 print(matrix[r][c] + "\t");
@@ -61,6 +81,7 @@ class Matrix {
             }
         }
 
+        res.updateTranspose();
         return res;
     }
 
@@ -72,6 +93,7 @@ class Matrix {
 
         if (
             (dimM.rows == dimN.rows && dimM.cols == dimN.cols) ||
+            // broadcasting cases
             (
                 dimM.rows == dimN.rows &&
                 (dimM.cols > 1 && dimN.cols == 1)
@@ -98,6 +120,7 @@ class Matrix {
             }
         }
 
+        res.updateTranspose();
         return res;
     }
 
