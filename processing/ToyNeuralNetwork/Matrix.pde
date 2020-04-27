@@ -50,6 +50,16 @@ class Matrix {
         }
     }
 
+    Matrix copy() {
+        Matrix res = new Matrix(dims.rows, dims.cols);
+        for (int r = 0; r < dims.rows; r++) {
+            for (int c = 0; c < dims.cols; c++) {
+                res.setCell(r, c, getCell(r, c));
+            }
+        }
+        return res;
+    }
+
     void printMatrix() {
         println("(" + dims.rows + ", " + dims.cols + ")");
         println("---");
