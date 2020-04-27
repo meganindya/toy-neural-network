@@ -113,20 +113,11 @@ class Matrix {
     }
 
     private float minOrMax(int v) {
-        float val;
-        if (v == 0) {
-            val = Float.MAX_VALUE;
-        } else {
-            val = Float.MIN_VALUE;
-        }
-
+        float val = v == 0 ? Float.MAX_VALUE : Float.MIN_VALUE;
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
-                if (v == 0) {
-                    val = min(val, getCell(r, c));
-                } else {
-                    val = max(val, getCell(r, c));
-                }
+                val = v == 0 ?
+                    min(val, getCell(r, c)) : min(val, getCell(r, c));
             }
         }
         return val;
@@ -139,19 +130,10 @@ class Matrix {
             res = new Matrix(1, dims.cols);
 
             for (int c = 0; c < dims.cols; c++) {
-                float val;
-                if (v == 0) {
-                    val = Float.MAX_VALUE;
-                } else {
-                    val = Float.MIN_VALUE;
-                }
-
+                float val = v == 0 ? Float.MAX_VALUE : Float.MIN_VALUE;
                 for (int r = 0; r < dims.rows; r++) {
-                    if (v == 0) {
-                        val = min(val, getCell(r, c));
-                    } else {
-                        val = max(val, getCell(r, c));
-                    }
+                    val = v == 0 ?
+                        min(val, getCell(r, c)) : min(val, getCell(r, c));
                 }
                 res.setCell(0, c, val);
             }
@@ -161,19 +143,10 @@ class Matrix {
             res = new Matrix(dims.rows, 1);
 
             for (int r = 0; r < dims.rows; r++) {
-                float val;
-                if (v == 0) {
-                    val = Float.MAX_VALUE;
-                } else {
-                    val = Float.MIN_VALUE;
-                }
-
+                float val = v == 0 ? Float.MAX_VALUE : Float.MIN_VALUE;
                 for (int c = 0; c < dims.cols; c++) {
-                    if (v == 0) {
-                        val = min(val, getCell(r, c));
-                    } else {
-                        val = max(val, getCell(r, c));
-                    }
+                    val = v == 0 ?
+                        min(val, getCell(r, c)) : min(val, getCell(r, c));
                 }
                 res.setCell(r, 0, val);
             }
@@ -182,19 +155,19 @@ class Matrix {
         }
     }
 
-    float min() {
+    float minimum() {
         return minOrMax(0);
     }
 
-    float min(int axis) {
+    Matrix minimum(int axis) {
         return minOrMax(0, axis);
     }
 
-    float max() {
+    float maximum() {
         return minOrMax(1);
     }
 
-    float max(int axis) {
+    Matrix maximum(int axis) {
         return minOrMax(1, axis);
     }
 }
