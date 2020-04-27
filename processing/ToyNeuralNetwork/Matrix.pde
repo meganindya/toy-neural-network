@@ -161,6 +161,19 @@ Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
     return res;
 }
 
+Matrix elemWiseBinaryOp(int v, Matrix m, char op) {
+    Dimensions dims = m.getDims();
+    Matrix res = new Matrix(dims.rows, dims.cols);
+
+    for (int r = 0; r < dims.rows; r++) {
+        for (int c = 0; c < dims.cols; c++) {
+            res.setCell(r, c, binaryOp(v, m.getCell(r, c), op));
+        }
+    }
+
+    return res;
+}
+
 Matrix elemWiseBinaryOp(Matrix m, Matrix n, char op) {
     Dimensions dimM = m.getDims();
     Dimensions dimN = n.getDims();
@@ -203,12 +216,20 @@ Matrix add(Matrix m, int v) {
     return elemWiseBinaryOp(m, v, '+');
 }
 
+Matrix add(int v, Matrix m) {
+    return elemWiseBinaryOp(v, m, '+');
+}
+
 Matrix add(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '+');
 }
 
 Matrix sub(Matrix m, int v) {
     return elemWiseBinaryOp(m, v, '-');
+}
+
+Matrix sub(int v, Matrix m) {
+    return elemWiseBinaryOp(v, m, '-');
 }
 
 Matrix sub(Matrix m, Matrix n) {
@@ -219,6 +240,10 @@ Matrix mul(Matrix m, int v) {
     return elemWiseBinaryOp(m, v, '*');
 }
 
+Matrix mul(int v, Matrix m) {
+    return elemWiseBinaryOp(v, m, '*');
+}
+
 Matrix mul(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '*');
 }
@@ -227,12 +252,20 @@ Matrix div(Matrix m, int v) {
     return elemWiseBinaryOp(m, v, '/');
 }
 
+Matrix div(int v, Matrix m) {
+    return elemWiseBinaryOp(v, m, '/');
+}
+
 Matrix div(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '/');
 }
 
 Matrix mod(Matrix m, int v) {
     return elemWiseBinaryOp(m, v, '%');
+}
+
+Matrix mod(int v, Matrix m) {
+    return elemWiseBinaryOp(v, m, '%');
 }
 
 Matrix mod(Matrix m, Matrix n) {
