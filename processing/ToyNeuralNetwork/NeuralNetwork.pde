@@ -88,7 +88,7 @@ class NeuralNetwork {
     private void forwardPropagate() {
         A[0] = X.copy();
         for (int i = 1; i <= nLayers; i++) {
-            Z[i] = add(mul(W[i], A[i - 1]), b[i]);
+            Z[i] = add(dot(W[i], A[i - 1]), b[i]);
             A[i] = activate(Z[i], activationFuncs[i]);
         }
     }
@@ -136,10 +136,11 @@ class NeuralNetwork {
 
         translate(xpos, ypos);
 
-        stroke(0);
         ellipseMode(CENTER);
-        fill(0, 0, 255);
+        textAlign(CENTER, CENTER);
+        textSize(radius / 1.5);
 
+        // connections
         for (int i = 0; i < nLayers; i++) {
             int x = i;
 
@@ -149,20 +150,39 @@ class NeuralNetwork {
                 for (int n = 0; n < layers[i + 1]; n++) {
                     float yN = n + (float) (1 - layers[i + 1]) / 2;
 
-                    stroke(0);
+                    stroke(51);
+                    if (W[i + 1].getCell(n, m) > 0) {
+                        strokeWeight(1);
+                    } else {
+                        strokeWeight(0);
+                    }
                     line(x * hgap, yM * vgap, (x + 1) * hgap, yN * vgap);
                 }
-
-                stroke(255, 0, 0);
-                ellipse(x * hgap, yM * vgap, radius * 2, radius * 2);
             }
         }
 
-        for (int i = 0; i < layers[nLayers]; i++) {
-            float y = i + (float) (1 - layers[nLayers]) / 2;
+        // nodes
+        for (int i = 0; i <= nLayers; i++) {
+            int x = i;
 
-            stroke(255, 0, 0);
-            ellipse(nLayers * hgap, y * vgap, radius * 2, radius * 2);
+            for (int j = 0; j < layers[i]; j++) {
+                float yM = j + (float) (1 - layers[i]) / 2;
+
+                noStroke();
+                fill(0, 0, 51);
+                if (i == 0) {
+                    fill(0, 0, 51);
+                } else {
+                    if (A[i].getCell(j, 0) > 0) {
+                        fill(0, 127, 0);
+                    } else {
+                        fill(127, 0, 0);
+                    }
+                }
+                ellipse(x * hgap, yM * vgap, radius * 2, radius * 2);
+                fill(255);
+                text(j + 1, x * hgap, yM * vgap);
+            }
         }
 
         pop();
