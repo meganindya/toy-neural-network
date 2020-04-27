@@ -196,3 +196,26 @@ Matrix log10(Matrix m) {
 Matrix log(Matrix m) {
     return elemWiseUnaryOp(m, "log");
 }
+
+Matrix dot(Matrix m, Matrix n) {
+    Dimensions dimM = m.getDims();
+    Dimensions dimN = n.getDims();
+
+    Matrix res = null;
+
+    if (dimM.cols == dimN.rows) {
+        res = new Matrix(dimM.rows, dimN.cols);
+
+        for (int r = 0; r < dimM.rows; r++) {
+            for (int c = 0; c < dimN.cols; c++) {
+                float sum = 0;
+                for (int k = 0; k < dimM.cols; k++) {
+                    sum += m.getCell(r, k) * n.getCell(k, c);
+                }
+                res.setCell(r, c, sum);
+            }
+        }
+    }
+
+    return res;
+}
