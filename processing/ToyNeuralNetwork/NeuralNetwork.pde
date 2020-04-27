@@ -1,7 +1,7 @@
 class NeuralNetwork {
     private Matrix X, Y;
-    private Matrix[] W, Z, A;
-    private float b[];
+    private Matrix[] W, dW, Z, dZ, A, dA;
+    private float[] b, db;
     private Dimensions dims[];
     private int layers[], nLayers;
     private String activationFuncs[];
@@ -15,12 +15,18 @@ class NeuralNetwork {
         nLayers = layers.length - 1;
 
         W = new Matrix[nLayers + 1];
+        dW = new Matrix[nLayers + 1];
         Z = new Matrix[nLayers + 1];
+        dZ = new Matrix[nLayers + 1];
         A = new Matrix[nLayers + 1];
+        dA = new Matrix[nLayers + 1];
         for (int i = 1; i <= nLayers; i++) {
             W[i] = new Matrix(layers[i], layers[i - 1]);
+            dW[i] = new Matrix(layers[i], layers[i - 1]);
             Z[i] = new Matrix(layers[i], 1);
+            dZ[i] = new Matrix(layers[i], 1);
             A[i] = new Matrix(layers[i], 1);
+            dA[i] = new Matrix(layers[i], 1);
 
             if (i == nLayers) {
                 activationFuncs[i] = "sigmoid";
@@ -31,6 +37,7 @@ class NeuralNetwork {
         initialize();
 
         b = new float[nLayers + 1];
+        db = new float[nLayers + 1];
 
         cost = new Matrix(layers[nLayers], 1);
     }
@@ -38,6 +45,7 @@ class NeuralNetwork {
     private void initialize() {
         W[0] = Z[0] = null;
         A[0] = X.copy();
+        dW[0] = dZ[0] = null;
         activationFuncs[0] = "";
 
         for (int i = 1; i < W.length; i++) {
@@ -56,8 +64,16 @@ class NeuralNetwork {
         return z > 0 ? z : 0;
     }
 
+    float drelu(float z) {
+        return z > 0 ? 1 : 0;
+    }
+
     float sigmoid(float z) {
         return 1 / (1 + exp(-z));
+    }
+
+    float dsigmoid(float z) {
+        return sigmoid(z) * sigmoid(1 - z);
     }
 
     Matrix activate(Matrix m, String func) {
@@ -68,8 +84,12 @@ class NeuralNetwork {
             for (int c = 0; c < dims.cols; c++) {
                 if (func.equals("relu")) {
                     res.setCell(r, c, relu(m.getCell(r, c)));
-                } else {
+                } else if (func.equals("drelu")) {
+                    res.setCell(r, c, drelu(m.getCell(r, c)));
+                } else if (func.equals("sigmoid")) {
                     res.setCell(r, c, sigmoid(m.getCell(r, c)));
+                } else if (func.equals("dsigmoid")) {
+                    res.setCell(r, c, dsigmoid(m.getCell(r, c)));
                 }
             }
         }
@@ -91,6 +111,17 @@ class NeuralNetwork {
             add(dot(Y, log(AL.T)), dot(sub(1, Y), log(sub(1, AL)).T)),
             -m
         );
+    }
+
+    void backPropagate() {
+        for (int i = nLayers; i > 0; i--) {
+            dZ[i] = mul(dA[i], activate(Z[i], activationFuncs[i]));
+
+            int m = layers[i - 1];
+            dW[i] = div(dot(dZ, A[i - 1].T), m);
+            db[i] = div(dZ[i].sum(axis), m);
+            dA[i - 1] = dot(W[i].T, dZ[i]);
+        }
     }
 
     /*void show(int w, int h) {
