@@ -5,6 +5,7 @@ class NeuralNetwork {
     private int layers[], nLayers;
     private String activationFuncs[];
     private Matrix cost;
+    private int outputIndex;
 
     NeuralNetwork(int layers[]) {
         this.layers = layers;
@@ -93,6 +94,19 @@ class NeuralNetwork {
         }
     }
 
+    private void normalizeOutput() {
+        float sum = A[nLayers].sum();
+        div(A[nLayers], sum);
+
+        float max = A[nLayers].maximum();
+        for (int i = 0; i < layers[nLayers]; i++) {
+            if (A[nLayers].getCell(i, 0) == max) {
+                outputIndex = i;
+                break;
+            }
+        }
+    }
+
     private void calculateCost() {
         int m = layers[nLayers];
         Matrix AL = A[nLayers];
@@ -126,6 +140,7 @@ class NeuralNetwork {
 
         initializeParameters();
         forwardPropagate();
+        normalizeOutput();
         calculateCost();
         backPropagate();
         updateParameters(alpha);
@@ -162,6 +177,7 @@ class NeuralNetwork {
         }
 
         // nodes
+        float xMax = X.maximum();
         for (int i = 0; i <= nLayers; i++) {
             int x = i;
 
@@ -171,12 +187,24 @@ class NeuralNetwork {
                 noStroke();
                 fill(0, 0, 51);
                 if (i == 0) {
-                    fill(0, 0, 51);
-                } else {
-                    if (A[i].getCell(j, 0) > 0) {
-                        fill(0, 127, 0);
+                    fill(
+                        lerpColor(
+                            color(0, 0, 0),
+                            color(0, 0, 255),
+                            X.getCell(j, 0) / xMax
+                        )
+                    );
+                } else if(i == nLayers) {
+                    if (j == outputIndex) {
+                        fill(0, 191, 0);
                     } else {
-                        fill(127, 0, 0);
+                        fill(191, 0, 0);
+                    }
+                }else {
+                    if (A[i].getCell(j, 0) > 0) {
+                        fill(0, 63, 0);
+                    } else {
+                        fill(63, 0, 0);
                     }
                 }
                 ellipse(x * hgap, yM * vgap, radius * 2, radius * 2);

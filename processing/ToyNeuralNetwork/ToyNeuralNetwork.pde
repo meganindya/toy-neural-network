@@ -30,15 +30,16 @@ void setup() {
     frameRate(2);
 
     network = new NeuralNetwork(layers);
-    X = new Matrix(layers[0], 1);
-    X.randomize(0, 5);
-    Y = new Matrix(layers[layersCount - 1], 1);
-    Y.setCell(0, 0, 1);
 }
 
 void draw() {
     background(255);
 
+    X = new Matrix(layers[0], 1);
+    X.randomize(0, 5);
+    Y = new Matrix(layers[layersCount - 1], 1);
+    Y.setCell(floor(random(0, layers[layersCount - 1])), 0, 1);
     network.train(X, Y, 0.01);
+
     network.show(buffer, buffer + networkHeight / 2, hspace, vspace, radius);
 }
