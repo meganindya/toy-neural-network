@@ -148,7 +148,7 @@ private static float binaryOp(float a, float b, char op) {
     return 0;
 }
 
-private Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
+private Matrix elemWiseBinaryOp(Matrix m, float v, char op) {
     Dimensions dims = m.getDims();
     Matrix res = new Matrix(dims.rows, dims.cols);
 
@@ -161,7 +161,7 @@ private Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
     return res;
 }
 
-private Matrix elemWiseBinaryOp(int v, Matrix m, char op) {
+private Matrix elemWiseBinaryOp(float v, Matrix m, char op) {
     Dimensions dims = m.getDims();
     Matrix res = new Matrix(dims.rows, dims.cols);
 
@@ -212,11 +212,11 @@ private Matrix elemWiseBinaryOp(Matrix m, Matrix n, char op) {
     return res;
 }
 
-Matrix add(Matrix m, int v) {
+Matrix add(Matrix m, float v) {
     return elemWiseBinaryOp(m, v, '+');
 }
 
-Matrix add(int v, Matrix m) {
+Matrix add(float v, Matrix m) {
     return elemWiseBinaryOp(v, m, '+');
 }
 
@@ -224,11 +224,11 @@ Matrix add(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '+');
 }
 
-Matrix sub(Matrix m, int v) {
+Matrix sub(Matrix m, float v) {
     return elemWiseBinaryOp(m, v, '-');
 }
 
-Matrix sub(int v, Matrix m) {
+Matrix sub(float v, Matrix m) {
     return elemWiseBinaryOp(v, m, '-');
 }
 
@@ -236,11 +236,11 @@ Matrix sub(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '-');
 }
 
-Matrix mul(Matrix m, int v) {
+Matrix mul(Matrix m, float v) {
     return elemWiseBinaryOp(m, v, '*');
 }
 
-Matrix mul(int v, Matrix m) {
+Matrix mul(float v, Matrix m) {
     return elemWiseBinaryOp(v, m, '*');
 }
 
@@ -248,11 +248,11 @@ Matrix mul(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '*');
 }
 
-Matrix div(Matrix m, int v) {
+Matrix div(Matrix m, float v) {
     return elemWiseBinaryOp(m, v, '/');
 }
 
-Matrix div(int v, Matrix m) {
+Matrix div(float v, Matrix m) {
     return elemWiseBinaryOp(v, m, '/');
 }
 
@@ -260,11 +260,11 @@ Matrix div(Matrix m, Matrix n) {
     return elemWiseBinaryOp(m, n, '/');
 }
 
-Matrix mod(Matrix m, int v) {
+Matrix mod(Matrix m, float v) {
     return elemWiseBinaryOp(m, v, '%');
 }
 
-Matrix mod(int v, Matrix m) {
+Matrix mod(float v, Matrix m) {
     return elemWiseBinaryOp(v, m, '%');
 }
 
