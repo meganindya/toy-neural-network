@@ -27,5 +27,5 @@ void setup() {
 }
 
 void draw() {
-    network.show(networkWidth, networkHeight, hspace, vspace, radius);
+    network.show(buffer, buffer + networkHeight / 2, hspace, vspace, radius);
 }

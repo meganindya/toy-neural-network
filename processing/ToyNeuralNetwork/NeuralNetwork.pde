@@ -131,44 +131,39 @@ class NeuralNetwork {
         updateParameters();
     }
 
-    /*void show(int w, int h) {
-        int max = 0;
-        for (int i = 0; i < nLayers; i++) {
-            if (layers[i] > max) {
-                max = nLayers[i];
-            }
-        }
-        int r = 10, vspace = 25, hspace = 100;
-
-        stroke(0);
-        fill(127);
+    void show(int xpos, int ypos, int hgap, int vgap, int radius) {
         push();
 
-        translate(50, h / 2);
+        translate(xpos, ypos);
 
+        stroke(0);
         ellipseMode(CENTER);
-        for (int i = 0; i < nLayers - 1; i++) {
-            int x = i * hspace;
+        fill(0, 0, 255);
+
+        for (int i = 0; i < nLayers; i++) {
+            int x = i;
+
             for (int m = 0; m < layers[i]; m++) {
-                int yM = (m - layers[i] / 2) * vspace;
-                if (layers[i] % 2 == 0)
-                    yM += vspace / 2;
+                float yM = (float) m + (1 - layers[i]) / 2;
+
                 for (int n = 0; n < layers[i + 1]; n++) {
-                    int yN = (n - layers[i + 1] / 2) * vspace;
-                    if (layers[i + 1] % 2 == 0)
-                        yN += vspace / 2;
-                    line(x, yM, x + hspace, yN);
+                    float yN = (float) n + (1 - layers[i + 1]) / 2;
+
+                    stroke(0);
+                    line(x * hgap, yM * vgap, (x + 1) * hgap, yN * vgap);
                 }
-                ellipse(x, yM, r * 2, r * 2);
+
+                stroke(255, 0, 0);
+                ellipse(x * hgap, yM * vgap, radius * 2, radius * 2);
             }
         }
-        for (int i = 0; i < layers[nLayers - 1]; i++) {
-            int y = (i - layers[nLayers - 1] / 2) * vspace;
-            if (layers[nLayers - 1] % 2 == 0)
-                y += vspace / 2;
-            ellipse((nLayers - 1) * hspace, y, r * 2, r * 2);
+        for (int i = 0; i < layers[nLayers]; i++) {
+            float y = (float) i + (1 - layers[nLayers]) / 2;
+
+            stroke(255, 0, 0);
+            ellipse(nLayers * hgap, y * vgap, radius * 2, radius * 2);
         }
 
         pop();
-    }*/
+    }
 }
