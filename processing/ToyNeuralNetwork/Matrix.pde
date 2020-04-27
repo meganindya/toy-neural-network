@@ -117,7 +117,7 @@ class Matrix {
         for (int r = 0; r < dims.rows; r++) {
             for (int c = 0; c < dims.cols; c++) {
                 val = v == 0 ?
-                    min(val, getCell(r, c)) : min(val, getCell(r, c));
+                    min(val, getCell(r, c)) : max(val, getCell(r, c));
             }
         }
         return val;
@@ -133,7 +133,7 @@ class Matrix {
                 float val = v == 0 ? Float.MAX_VALUE : Float.MIN_VALUE;
                 for (int r = 0; r < dims.rows; r++) {
                     val = v == 0 ?
-                        min(val, getCell(r, c)) : min(val, getCell(r, c));
+                        min(val, getCell(r, c)) : max(val, getCell(r, c));
                 }
                 res.setCell(0, c, val);
             }
@@ -146,7 +146,7 @@ class Matrix {
                 float val = v == 0 ? Float.MAX_VALUE : Float.MIN_VALUE;
                 for (int c = 0; c < dims.cols; c++) {
                     val = v == 0 ?
-                        min(val, getCell(r, c)) : min(val, getCell(r, c));
+                        min(val, getCell(r, c)) : max(val, getCell(r, c));
                 }
                 res.setCell(r, 0, val);
             }
