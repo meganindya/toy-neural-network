@@ -47,6 +47,8 @@ class Matrix {
             return a * b;
         else if (op == '/')
             return a / b;
+        else if (op == '%')
+            return a % b;
         return 0;
     }
 
@@ -129,5 +131,13 @@ class Matrix {
 
     Matrix div(Matrix m) {
         return elemWiseBinaryOp(m, '/');
+    }
+
+    Matrix mod(int v) {
+        return elemWiseBinaryOp(v, '%');
+    }
+
+    Matrix mod(Matrix m) {
+        return elemWiseBinaryOp(m, '%');
     }
 }
