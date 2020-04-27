@@ -1,9 +1,10 @@
 class NeuralNetwork {
     private Matrix X, Y;
-    private Matrix W[];
+    private Matrix[] W, Z, A;
     private float b[];
     private Dimensions dims[];
     private int layers[], nLayers;
+    private String activationFuncs[];
 
     NeuralNetwork(Matrix X, Matrix Y, int layers[]) {
         this.X = X;
@@ -13,16 +14,29 @@ class NeuralNetwork {
         nLayers = layers.length - 1;
 
         W = new Matrix[nLayers + 1];
+        Z = new Matrix[nLayers + 1];
+        A = new Matrix[nLayers + 1];
         for (int i = 1; i <= nLayers; i++) {
             W[i] = new Matrix(layers[i], layers[i - 1]);
+            Z[i] = new Matrix(layers[i], 1);
+            A[i] = new Matrix(layers[i], 1);
+
+            if (i == nLayers) {
+                activationFuncs[i] = "sigmoid";
+            } else {
+                activationFuncs[i] = "relu";
+            }
         }
-        randomInitialize();
+        initialize();
 
         b = new float[nLayers + 1];
     }
 
-    private void randomInitialize() {
-        W[0] = null;
+    private void initialize() {
+        W[0] = Z[0] = null;
+        A[0] = X.copy();
+        activationFuncs[0] = "";
+
         for (int i = 1; i < W.length; i++) {
             Matrix w = W[i];
             Dimensions dims = w.getDims();
@@ -32,6 +46,38 @@ class NeuralNetwork {
                     w.setCell(r, c, random(-1, 1));
                 }
             }
+        }
+    }
+
+    float relu(float z) {
+        return z > 0 ? z : 0;
+    }
+
+    float sigmoid(float z) {
+        return 1 / (1 + exp(-z));
+    }
+
+    Matrix activate(Matrix m, String func) {
+        Dimensions dims = m.getDims();
+        Matrix res;
+
+        for (int r = 0; r < dims.rows; r++) {
+            for (int c = 0; c < dims.cols; c++) {
+                if (func.equals("relu")) {
+                    res.setCell(r, c, relu(m.getCell(r, c)));
+                } else {
+                    res.setCell(r, c, sigmoid(m.getCell(r, c)));
+                }
+            }
+        }
+
+        return res;
+    }
+
+    void forwardPropagate() {
+        for (int i = 1; i <= nLayers; i++) {
+            Z[i] = add(mul(W[i], A[i - 1]), b[i]);
+            A[i] = activate(Z[i], activationFuncs[i]);
         }
     }
 
