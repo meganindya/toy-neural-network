@@ -44,34 +44,27 @@ class NeuralNetwork {
 
     private void initializeParameters() {
         for (int i = 1; i < W.length; i++) {
-            Matrix w = W[i];
-            Dimensions dims = w.getDims();
-
-            for (int r = 0; r < dims.rows; r++) {
-                for (int c = 0; c < dims.cols; c++) {
-                    w.setCell(r, c, random(-1, 1));
-                }
-            }
+            W[i].randomize(-1, 1);
         }
     }
 
-    float relu(float z) {
+    private float relu(float z) {
         return z > 0 ? z : 0;
     }
 
-    float drelu(float z) {
+    private float drelu(float z) {
         return z > 0 ? 1 : 0;
     }
 
-    float sigmoid(float z) {
+    private float sigmoid(float z) {
         return 1 / (1 + exp(-z));
     }
 
-    float dsigmoid(float z) {
+    private float dsigmoid(float z) {
         return sigmoid(z) * sigmoid(1 - z);
     }
 
-    Matrix activate(Matrix m, String func) {
+    private Matrix activate(Matrix m, String func) {
         Dimensions dims = m.getDims();
         Matrix res;
 
@@ -92,7 +85,7 @@ class NeuralNetwork {
         return res;
     }
 
-    void forwardPropagate() {
+    private void forwardPropagate() {
         A[0] = X.copy();
         for (int i = 1; i <= nLayers; i++) {
             Z[i] = add(mul(W[i], A[i - 1]), b[i]);
@@ -100,7 +93,7 @@ class NeuralNetwork {
         }
     }
 
-    void calculateCost() {
+    private void calculateCost() {
         int m = layers[nLayers];
         Matrix AL = A[nLayers];
         cost = div(
@@ -109,7 +102,7 @@ class NeuralNetwork {
         );
     }
 
-    void backPropagate() {
+    private void backPropagate() {
         for (int i = nLayers; i > 0; i--) {
             dZ[i] = mul(dA[i], activate(Z[i], activationFuncs[i]));
 
@@ -120,7 +113,7 @@ class NeuralNetwork {
         }
     }
 
-    void updateParameters(float alpha) {
+    private void updateParameters(float alpha) {
         for (int i = 1; i <= nLayers; i++) {
             W[i] = sub(W[i], mul(alpha, dW[i]));
             b[i] = sub(W[i], mul(alpha, db[i]));

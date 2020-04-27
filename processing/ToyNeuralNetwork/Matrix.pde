@@ -18,7 +18,7 @@ class Matrix {
         T = new Matrix(this);
     }
 
-    Matrix(Matrix m) {
+    private Matrix(Matrix m) {
         Dimensions dimM = m.getDims();
         dims = new Dimensions(dimM.cols, dimM.rows);
         matrix = new float[dims.rows][dims.cols];
@@ -113,7 +113,7 @@ class Matrix {
     }
 }
 
-static float unaryOp(float v, String op) {
+private static float unaryOp(float v, String op) {
     if (op.equals("log10"))
         return log(v) / log(10);
     else if (op.equals("log"))
@@ -121,7 +121,7 @@ static float unaryOp(float v, String op) {
     return 0;
 }
 
-Matrix elemWiseUnaryOp(Matrix m, String op) {
+private Matrix elemWiseUnaryOp(Matrix m, String op) {
     Dimensions dims = m.getDims();
     Matrix res = new Matrix(dims.rows, dims.cols);
 
@@ -134,7 +134,7 @@ Matrix elemWiseUnaryOp(Matrix m, String op) {
     return res;
 }
 
-static float binaryOp(float a, float b, char op) {
+private static float binaryOp(float a, float b, char op) {
     if (op == '+')
         return a + b;
     else if (op == '-')
@@ -148,7 +148,7 @@ static float binaryOp(float a, float b, char op) {
     return 0;
 }
 
-Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
+private Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
     Dimensions dims = m.getDims();
     Matrix res = new Matrix(dims.rows, dims.cols);
 
@@ -161,7 +161,7 @@ Matrix elemWiseBinaryOp(Matrix m, int v, char op) {
     return res;
 }
 
-Matrix elemWiseBinaryOp(int v, Matrix m, char op) {
+private Matrix elemWiseBinaryOp(int v, Matrix m, char op) {
     Dimensions dims = m.getDims();
     Matrix res = new Matrix(dims.rows, dims.cols);
 
@@ -174,7 +174,7 @@ Matrix elemWiseBinaryOp(int v, Matrix m, char op) {
     return res;
 }
 
-Matrix elemWiseBinaryOp(Matrix m, Matrix n, char op) {
+private Matrix elemWiseBinaryOp(Matrix m, Matrix n, char op) {
     Dimensions dimM = m.getDims();
     Dimensions dimN = n.getDims();
 
